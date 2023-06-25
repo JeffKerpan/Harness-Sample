@@ -1,0 +1,53 @@
+pipeline:
+  identifier: Deploy_Sample_Pipeline_1687550010493
+  name: Deploy_Sample_Pipeline
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        identifier: Stage
+        type: Deployment
+        name: Stage
+        description: ""
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: sample_service_1687549972627
+          environment:
+            environmentRef: dev_1687549943571
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: devcluster_1687549943571
+          execution:
+            steps:
+              - step:
+                  identifier: shell_ID
+                  type: ShellScript
+                  name: Echo Welcome Message
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: echo "Welcome to Harness CD"
+                    environmentVariables: []
+                    outputVariables: []
+                    executionTarget: {}
+              - step:
+                  identifier: Rolling_Deployment
+                  type: K8sRollingDeploy
+                  name: Rolling Deployment
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+                  timeout: 10m
+            rollbackSteps: []
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
